@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo
+    container_name: mongotodolist
+    ports:
+      - "27017:27017"
+
+  back:
+    build: ./backend
+    container_name: todolistback
+    environment:
+      - MONGODB_URL=mongodb://0.0.0.0:27017 #todo: юзать MONGODB_URL
+    ports:
+      - "8000:8000"
+    links:
+      - mongo
+
+  front:
+    build:
+      context: ./frontend
+      args:
+        API_URL: "http://localhost:8000/"
+    container_name: todolistfront
+    environment:
+      - HOST:0.0.0.0
+    ports:
+      - "3000:3000"
+
+networks:
+  default:
+    # Use a custom driver
+    driver: bridge
